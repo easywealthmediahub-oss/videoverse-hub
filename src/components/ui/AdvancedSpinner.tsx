@@ -90,9 +90,9 @@ const AdvancedSpinner: React.FC<AdvancedSpinnerProps> = ({
         </div>
       </div>
 
-      {/* Add CSS for animations */}
-      <style jsx>{`
-        :root {
+      {/* CSS Styles - using inline style tag */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .spinner-wrapper {
           --primary-glow: conic-gradient(from 0deg, #ff0000, #ff00ff, #0000ff, #00ffff, #00ff00, #ffff00, #ff0000);
         }
         
@@ -105,19 +105,17 @@ const AdvancedSpinner: React.FC<AdvancedSpinnerProps> = ({
           align-items: center;
         }
         
-        /* The Moving RGB Outer Glow */
         .outer-glow {
           position: absolute;
           width: 260px;
           height: 260px;
           border-radius: 50%;
           background: var(--primary-glow);
-          animation: rotate 3s linear infinite;
+          animation: spinner-rotate 3s linear infinite;
           filter: blur(15px);
           opacity: 0.4;
         }
         
-        /* Inner Glass Container */
         .glass-core {
           position: absolute;
           width: 220px;
@@ -134,13 +132,12 @@ const AdvancedSpinner: React.FC<AdvancedSpinnerProps> = ({
           box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
         
-        /* SVG Text Path Styling */
         .text-ring {
           position: absolute;
           width: 320px;
           height: 320px;
           z-index: 3;
-          animation: rotate-reverse 12s linear infinite;
+          animation: spinner-rotate-reverse 12s linear infinite;
         }
         
         .text-ring text {
@@ -151,7 +148,6 @@ const AdvancedSpinner: React.FC<AdvancedSpinnerProps> = ({
           text-transform: uppercase;
         }
         
-        /* The Progress Circle (Stroke) */
         .progress-svg {
           position: absolute;
           width: 240px;
@@ -164,24 +160,15 @@ const AdvancedSpinner: React.FC<AdvancedSpinnerProps> = ({
           fill: none;
           stroke-width: 6;
           stroke-linecap: round;
-          stroke-dasharray: 628; /* Circumference 2 * PI * 100 */
+          stroke-dasharray: 628;
           stroke-dashoffset: 628;
           transition: stroke-dashoffset 0.3s ease;
           stroke: url(#gradient);
         }
         
-        /* Percentage Text */
         .percentage-container {
           text-align: center;
           z-index: 5;
-        }
-        
-        #count {
-          font-size: 3rem;
-          font-weight: 800;
-          color: #fff;
-          margin: 0;
-          letter-spacing: -2px;
         }
         
         .status-text {
@@ -193,17 +180,16 @@ const AdvancedSpinner: React.FC<AdvancedSpinnerProps> = ({
           opacity: 0.8;
         }
         
-        /* Animations */
-        @keyframes rotate {
+        @keyframes spinner-rotate {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
         
-        @keyframes rotate-reverse {
+        @keyframes spinner-rotate-reverse {
           from { transform: rotate(360deg); }
           to { transform: rotate(0deg); }
         }
-      `}</style>
+      ` }} />
     </div>
   );
 };
