@@ -39,7 +39,7 @@ export default function ChannelSettings() {
   useEffect(() => {
     if (channel) {
       setName(channel.name || '');
-      setUsername(channel.username || channel.name || ''); // Use channel name as fallback
+      setUsername(channel.name || ''); // Use channel name as username
       setDescription(channel.description || '');
       // Parse links from channel data
       const channelLinks = (channel as any).links;

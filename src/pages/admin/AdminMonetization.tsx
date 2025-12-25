@@ -233,7 +233,12 @@ export default function AdminMonetization() {
         ad_type: 'display',
         status: 'active',
         sizes: '300x250',
+        ad_placement: '',
+        ad_code: '',
+        video_position_seconds: 0,
+        page_placement: 'sidebar',
         targeting: '',
+        priority: 10,
       });
       setEditingAdUnit(null);
       fetchData();
@@ -717,9 +722,15 @@ export default function AdminMonetization() {
                             setAdForm({
                               name: '',
                               ad_format: 'banner',
+                              ad_type: 'display',
                               status: 'active',
                               sizes: '300x250',
+                              ad_placement: '',
+                              ad_code: '',
+                              video_position_seconds: 0,
+                              page_placement: 'sidebar',
                               targeting: '',
+                              priority: 10,
                             });
                           }}
                           className="w-full"
@@ -865,9 +876,15 @@ export default function AdminMonetization() {
                   <Button onClick={() => setAdForm({
                     name: '',
                     ad_format: 'banner',
+                    ad_type: 'display',
                     status: 'active',
                     sizes: '300x250',
+                    ad_placement: '',
+                    ad_code: '',
+                    video_position_seconds: 0,
+                    page_placement: 'sidebar',
                     targeting: '',
+                    priority: 10,
                   })}>
                     <Plus className="w-4 h-4 mr-2" />
                     Create Ad Unit
