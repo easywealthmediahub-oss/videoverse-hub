@@ -194,18 +194,18 @@ export default function Upload() {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto py-8 px-4">
-        <h1 className="text-3xl font-bold text-foreground mb-8">Upload Video</h1>
+      <div className="max-w-4xl mx-auto py-4 md:py-8 px-3 md:px-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-6 md:mb-8">Upload Video</h1>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-4 md:gap-8 md:grid-cols-2">
           {/* Video Upload Section */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Video className="w-5 h-5" />
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                <Video className="w-4 h-4 md:w-5 md:h-5" />
                 Video File
               </CardTitle>
-              <CardDescription>Select a video file to upload</CardDescription>
+              <CardDescription className="text-xs md:text-sm">Select a video file to upload</CardDescription>
             </CardHeader>
             <CardContent>
               <input
@@ -217,15 +217,15 @@ export default function Upload() {
               />
               
               {videoFile ? (
-                <div className="p-4 bg-muted rounded-lg">
+                <div className="p-3 md:p-4 bg-muted rounded-lg">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Video className="w-8 h-8 text-primary" />
-                      <div>
-                        <p className="font-medium text-foreground truncate max-w-[200px]">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <Video className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate max-w-[150px] md:max-w-[200px] text-sm md:text-base">
                           {videoFile.name}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs md:text-sm text-muted-foreground">
                           {(videoFile.size / 1024 / 1024).toFixed(2)} MB
                         </p>
                       </div>
@@ -233,6 +233,7 @@ export default function Upload() {
                     <Button
                       variant="ghost"
                       size="icon"
+                      className="h-8 w-8"
                       onClick={() => {
                         setVideoFile(null);
                         setVideoDuration(0);
@@ -243,13 +244,13 @@ export default function Upload() {
                   </div>
                   
                   {videoDuration > 0 && (
-                    <div className="mt-3 flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
+                    <div className="mt-2 md:mt-3 flex items-center gap-2">
+                      <Clock className="w-3 h-3 md:w-4 md:h-4 text-muted-foreground" />
+                      <span className="text-xs md:text-sm text-muted-foreground">
                         Duration: {formatDuration(videoDuration)}
                       </span>
                       {isShort && (
-                        <Badge variant="secondary" className="ml-2">
+                        <Badge variant="secondary" className="ml-2 text-xs">
                           Short
                         </Badge>
                       )}
@@ -259,13 +260,13 @@ export default function Upload() {
               ) : (
                 <div
                   onClick={() => videoInputRef.current?.click()}
-                  className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                  className="border-2 border-dashed border-border rounded-lg p-6 md:p-8 text-center cursor-pointer hover:border-primary transition-colors"
                 >
-                  <UploadIcon className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-foreground font-medium">Click to select video</p>
-                  <p className="text-sm text-muted-foreground mt-1">MP4, WebM, or MOV</p>
+                  <UploadIcon className="w-10 h-10 md:w-12 md:h-12 mx-auto text-muted-foreground mb-3 md:mb-4" />
+                  <p className="text-foreground font-medium text-sm md:text-base">Click to select video</p>
+                  <p className="text-xs md:text-sm text-muted-foreground mt-1">MP4, WebM, or MOV</p>
                   <p className="text-xs text-muted-foreground mt-2">
-                    Videos under 60 seconds will be uploaded as Shorts
+                    Videos under 60 seconds = Shorts
                   </p>
                 </div>
               )}
@@ -274,12 +275,12 @@ export default function Upload() {
 
           {/* Thumbnail Section */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Image className="w-5 h-5" />
+            <CardHeader className="pb-3 md:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                <Image className="w-4 h-4 md:w-5 md:h-5" />
                 Thumbnail
               </CardTitle>
-              <CardDescription>Add a custom thumbnail (optional)</CardDescription>
+              <CardDescription className="text-xs md:text-sm">Add a custom thumbnail (optional)</CardDescription>
             </CardHeader>
             <CardContent>
               <input
@@ -300,7 +301,7 @@ export default function Upload() {
                   <Button
                     variant="secondary"
                     size="icon"
-                    className="absolute top-2 right-2"
+                    className="absolute top-2 right-2 h-8 w-8"
                     onClick={() => {
                       setThumbnailFile(null);
                       setThumbnailPreview(null);
@@ -312,11 +313,11 @@ export default function Upload() {
               ) : (
                 <div
                   onClick={() => thumbnailInputRef.current?.click()}
-                  className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors aspect-video flex flex-col items-center justify-center"
+                  className="border-2 border-dashed border-border rounded-lg p-6 md:p-8 text-center cursor-pointer hover:border-primary transition-colors aspect-video flex flex-col items-center justify-center"
                 >
-                  <Image className="w-12 h-12 text-muted-foreground mb-4" />
-                  <p className="text-foreground font-medium">Click to add thumbnail</p>
-                  <p className="text-sm text-muted-foreground mt-1">JPG, PNG, or WebP</p>
+                  <Image className="w-10 h-10 md:w-12 md:h-12 text-muted-foreground mb-3 md:mb-4" />
+                  <p className="text-foreground font-medium text-sm md:text-base">Click to add thumbnail</p>
+                  <p className="text-xs md:text-sm text-muted-foreground mt-1">JPG, PNG, or WebP</p>
                 </div>
               )}
             </CardContent>
@@ -324,39 +325,40 @@ export default function Upload() {
         </div>
 
         {/* Details Section */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>Video Details</CardTitle>
+        <Card className="mt-4 md:mt-8">
+          <CardHeader className="pb-3 md:pb-6">
+            <CardTitle className="text-base md:text-lg">Video Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4 md:space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
+              <Label htmlFor="title" className="text-sm">Title *</Label>
               <Input
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter video title"
                 maxLength={100}
+                className="h-10"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-sm">Description</Label>
               <Textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your video"
-                rows={4}
+                rows={3}
               />
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 grid-cols-2">
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label className="text-sm">Category</Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
                     {CATEGORIES.map((cat) => (
@@ -369,9 +371,9 @@ export default function Upload() {
               </div>
 
               <div className="space-y-2">
-                <Label>Visibility</Label>
+                <Label className="text-sm">Visibility</Label>
                 <Select value={visibility} onValueChange={setVisibility}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-10">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -384,19 +386,20 @@ export default function Upload() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="tags">Tags</Label>
+              <Label htmlFor="tags" className="text-sm">Tags</Label>
               <Input
                 id="tags"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 placeholder="Enter tags separated by commas"
+                className="h-10"
               />
             </div>
           </CardContent>
         </Card>
 
         {/* Upload Progress & Button */}
-        <div className="mt-8 space-y-4">
+        <div className="mt-6 md:mt-8 space-y-4">
           {uploading && (
             <div className="space-y-2">
               <Progress value={uploadProgress} />

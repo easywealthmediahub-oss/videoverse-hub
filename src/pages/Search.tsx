@@ -72,24 +72,24 @@ export default function Search() {
 
   return (
     <Layout>
-      <div className="max-w-6xl mx-auto py-4 px-4">
+      <div className="max-w-6xl mx-auto py-4 px-3 md:px-4">
         {/* Search Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 md:gap-4 mb-4 md:mb-6">
           <div>
             {query && (
-              <h1 className="text-xl font-semibold text-foreground">
+              <h1 className="text-lg md:text-xl font-semibold text-foreground">
                 Search results for "{query}"
               </h1>
             )}
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs md:text-sm text-muted-foreground">
               {videos.length} {videos.length === 1 ? 'result' : 'results'}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Sort by:</span>
+            <span className="text-xs md:text-sm text-muted-foreground">Sort by:</span>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[120px] md:w-[140px] h-8 md:h-10 text-xs md:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -107,10 +107,11 @@ export default function Search() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : videos.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-0 md:space-y-4">
             {videos.map((video) => (
-              <div key={video.id} className="flex flex-col sm:flex-row gap-4 p-2 hover:bg-muted/50 rounded-lg transition-colors">
-                <div className="w-full sm:w-80 flex-shrink-0">
+              <div key={video.id} className="pb-4 md:pb-0">
+                {/* Mobile: Standard video card */}
+                <div className="md:hidden">
                   <VideoCard
                     id={video.id}
                     title={video.title}
@@ -121,21 +122,38 @@ export default function Search() {
                     timestamp={video.created_at}
                     duration={video.duration}
                     channelId={video.channel.id}
-                    compact
                   />
                 </div>
-                <div className="flex-1 min-w-0 hidden sm:block">
-                  <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
-                    {video.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {video.channel.name} • {video.view_count.toLocaleString()} views
-                  </p>
-                  {video.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {video.description}
+                
+                {/* Desktop: Horizontal layout */}
+                <div className="hidden md:flex gap-4 p-2 hover:bg-muted/50 rounded-lg transition-colors">
+                  <div className="w-80 flex-shrink-0">
+                    <VideoCard
+                      id={video.id}
+                      title={video.title}
+                      thumbnail={video.thumbnail_url || '/placeholder.svg'}
+                      channelName={video.channel.name}
+                      channelAvatar={video.channel.avatar_url || undefined}
+                      views={video.view_count}
+                      timestamp={video.created_at}
+                      duration={video.duration}
+                      channelId={video.channel.id}
+                      compact
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground line-clamp-2 mb-1">
+                      {video.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {video.channel.name} • {video.view_count.toLocaleString()} views
                     </p>
-                  )}
+                    {video.description && (
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {video.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

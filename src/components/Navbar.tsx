@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Search, Upload, Bell, User, LogOut, LayoutDashboard, Settings, UserCircle } from "lucide-react";
+import { Menu, Search, Upload, Bell, User, LogOut, LayoutDashboard, Settings, UserCircle, X, Cast } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +9,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,25 +24,55 @@ interface NavbarProps {
 
 const Navbar = ({ onMenuClick }: NavbarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const { user, signOut } = useAuth();
   const { profile, channel } = useProfile();
   const { isAdmin } = useUserRole();
   const { settings } = useSiteSettings();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setShowMobileSearch(false);
     }
   };
 
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-14 px-4 bg-background border-b border-border">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onMenuClick} className="hover:bg-accent">
-          <Menu className="h-5 w-5" />
+  // Mobile search overlay
+  if (isMobile && showMobileSearch) {
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center h-14 px-2 bg-background border-b border-border">
+        <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(false)}>
+          <X className="h-5 w-5" />
         </Button>
+        <form onSubmit={handleSearch} className="flex-1 flex items-center">
+          <Input
+            type="text"
+            placeholder="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="flex-1 border-0 focus-visible:ring-0 bg-transparent"
+            autoFocus
+          />
+          <Button type="submit" variant="ghost" size="icon">
+            <Search className="h-5 w-5" />
+          </Button>
+        </form>
+      </header>
+    );
+  }
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between h-14 px-2 md:px-4 bg-background border-b border-border">
+      {/* Left section */}
+      <div className="flex items-center gap-2 md:gap-4">
+        {!isMobile && (
+          <Button variant="ghost" size="icon" onClick={onMenuClick} className="hover:bg-accent">
+            <Menu className="h-5 w-5" />
+          </Button>
+        )}
         <Link to="/" className="flex items-center gap-1">
           <div 
             className={`rounded-full p-1.5 flex items-center justify-center w-8 h-8 ${settings.logo_background_color || 'bg-primary'}`}
@@ -54,10 +85,9 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 className="w-5 h-5 rounded-full object-cover" 
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.onerror = null; // prevents looping
+                  target.onerror = null;
                   target.style.display = 'none';
                   
-                  // If logo URL is a single character, display it as text
                   if (settings.logo_url.length === 1) {
                     const parent = target.parentElement;
                     if (parent) {
@@ -67,7 +97,6 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                       parent.appendChild(span);
                     }
                   } else {
-                    // Fallback to default SVG
                     const parent = target.parentElement;
                     if (parent) {
                       const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -82,7 +111,6 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 }}
               />
             ) : (
-              // If no logo URL, try to get the first letter of site name
               settings.site_name && settings.site_name.length > 0 ? (
                 <span className="text-lg font-bold text-primary-foreground">
                   {settings.site_name.charAt(0).toUpperCase()}
@@ -94,52 +122,75 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
               )
             )}
           </div>
-          <span className="ml-1 text-xl font-semibold tracking-tight text-foreground">
+          <span className="ml-1 text-lg md:text-xl font-semibold tracking-tight text-foreground">
             {settings.site_name || 'VideoHub'}
           </span>
         </Link>
       </div>
 
-      <form onSubmit={handleSearch} className="hidden sm:flex items-center flex-1 max-w-2xl mx-4">
-        <div className="flex w-full">
-          <Input
-            type="text"
-            placeholder="Search"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="rounded-r-none border-r-0 focus-visible:ring-0"
-          />
-          <Button type="submit" variant="secondary" className="rounded-l-none border border-l-0 border-input px-6">
+      {/* Center search (desktop only) */}
+      {!isMobile && (
+        <form onSubmit={handleSearch} className="hidden sm:flex items-center flex-1 max-w-2xl mx-4">
+          <div className="flex w-full">
+            <Input
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="rounded-r-none border-r-0 focus-visible:ring-0"
+            />
+            <Button type="submit" variant="secondary" className="rounded-l-none border border-l-0 border-input px-6">
+              <Search className="h-5 w-5" />
+            </Button>
+          </div>
+        </form>
+      )}
+
+      {/* Right section */}
+      <div className="flex items-center gap-0.5 md:gap-1">
+        {/* Mobile search button */}
+        {isMobile && (
+          <Button variant="ghost" size="icon" onClick={() => setShowMobileSearch(true)}>
             <Search className="h-5 w-5" />
           </Button>
-        </div>
-      </form>
+        )}
 
-      <div className="flex items-center gap-1">
-        <ThemeToggle />
+        {!isMobile && <ThemeToggle />}
         
         {user ? (
           <>
-            <Link to="/upload">
+            {!isMobile && (
+              <>
+                <Link to="/upload">
+                  <Button variant="ghost" size="icon">
+                    <Upload className="h-5 w-5" />
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-5 w-5" />
+                </Button>
+              </>
+            )}
+            {isMobile && (
               <Button variant="ghost" size="icon">
-                <Upload className="h-5 w-5" />
+                <Cast className="h-5 w-5" />
               </Button>
-            </Link>
+            )}
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
-                  <Avatar className="h-8 w-8">
+                  <Avatar className="h-7 w-7 md:h-8 md:w-8">
                     <AvatarImage src={profile?.avatar_url || undefined} />
-                    <AvatarFallback className="bg-primary text-primary-foreground">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                       {profile?.username?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 bg-popover">
                 <div className="px-2 py-1.5">
                   <p className="text-sm font-medium text-foreground">{profile?.display_name || profile?.username}</p>
                   <p className="text-xs text-muted-foreground">{user.email}</p>
@@ -162,6 +213,11 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                     <LayoutDashboard className="h-4 w-4" /> Studio
                   </Link>
                 </DropdownMenuItem>
+                {isMobile && (
+                  <DropdownMenuItem className="flex items-center gap-2">
+                    <ThemeToggle />
+                  </DropdownMenuItem>
+                )}
                 {isAdmin && (
                   <>
                     <DropdownMenuSeparator />
@@ -181,7 +237,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </>
         ) : (
           <Link to="/auth">
-            <Button>Sign In</Button>
+            <Button size={isMobile ? "sm" : "default"}>Sign In</Button>
           </Link>
         )}
       </div>

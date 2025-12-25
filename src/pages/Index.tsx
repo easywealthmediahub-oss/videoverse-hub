@@ -48,32 +48,35 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="p-6">
-        <CategoryChips />
+      <div className="p-0 md:p-6">
+        <div className="px-3 md:px-0">
+          <CategoryChips />
+        </div>
         
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-0 md:gap-4">
             {videos.map((video) => (
-              <VideoCard
-                key={video.id}
-                id={video.id}
-                title={video.title}
-                thumbnail={video.thumbnail_url || '/placeholder.svg'}
-                channelName={video.channel.name}
-                channelAvatar={video.channel.avatar_url || undefined}
-                views={video.view_count}
-                timestamp={video.created_at}
-                duration={video.duration}
-                channelId={video.channel.id}
-              />
+              <div key={video.id} className="pb-4 md:pb-0">
+                <VideoCard
+                  id={video.id}
+                  title={video.title}
+                  thumbnail={video.thumbnail_url || '/placeholder.svg'}
+                  channelName={video.channel.name}
+                  channelAvatar={video.channel.avatar_url || undefined}
+                  views={video.view_count}
+                  timestamp={video.created_at}
+                  duration={video.duration}
+                  channelId={video.channel.id}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+          <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
             <div className="bg-muted rounded-full p-6 mb-6">
               <Video className="w-16 h-16 text-muted-foreground" />
             </div>

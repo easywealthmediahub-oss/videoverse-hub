@@ -337,13 +337,13 @@ const Watch = () => {
 
   return (
     <Layout>
-      <div className="p-4 lg:p-6">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="p-0 md:p-4 lg:p-6">
+        <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
           {/* Main Video Section */}
-          <div className="flex-1 max-w-4xl">
-            {/* Video Player */}
+          <div className="flex-1 lg:max-w-4xl">
+            {/* Video Player - full width on mobile */}
             <div 
-              className="relative aspect-video bg-black rounded-xl overflow-hidden group"
+              className="relative aspect-video bg-black md:rounded-xl overflow-hidden group"
               onMouseEnter={() => setShowControls(true)}
               onMouseLeave={() => setShowControls(isPlaying ? false : true)}
             >
@@ -396,30 +396,30 @@ const Watch = () => {
                   className="absolute inset-0 flex items-center justify-center cursor-pointer"
                   onClick={togglePlay}
                 >
-                  <div className="w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
-                    <Play className="w-10 h-10 text-primary-foreground ml-1" fill="currentColor" />
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/90 rounded-full flex items-center justify-center hover:bg-primary transition-colors">
+                    <Play className="w-8 h-8 md:w-10 md:h-10 text-primary-foreground ml-1" fill="currentColor" />
                   </div>
                 </div>
               )}
 
               {/* Video Controls */}
-              <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+              <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 md:p-4 transition-opacity ${showControls ? 'opacity-100' : 'opacity-0'}`}>
                 {/* Progress bar */}
                 <Slider
                   value={[currentTime]}
                   max={duration || 100}
                   step={1}
                   onValueChange={handleSeek}
-                  className="mb-4"
+                  className="mb-2 md:mb-4"
                 />
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={togglePlay} className="text-white hover:bg-white/20">
-                      {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <Button variant="ghost" size="icon" onClick={togglePlay} className="text-white hover:bg-white/20 h-8 w-8 md:h-10 md:w-10">
+                      {isPlaying ? <Pause className="w-4 h-4 md:w-5 md:h-5" /> : <Play className="w-4 h-4 md:w-5 md:h-5" />}
                     </Button>
                     
-                    <div className="flex items-center gap-2">
+                    <div className="hidden md:flex items-center gap-2">
                       <Button variant="ghost" size="icon" onClick={toggleMute} className="text-white hover:bg-white/20">
                         {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                       </Button>
@@ -432,131 +432,142 @@ const Watch = () => {
                       />
                     </div>
                     
-                    <span className="text-white text-sm ml-2">
+                    <span className="text-white text-xs md:text-sm ml-1 md:ml-2">
                       {formatDuration(Math.floor(currentTime))} / {formatDuration(Math.floor(duration))}
                     </span>
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="text-white hover:bg-white/20">
-                      <Maximize className="w-5 h-5" />
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" onClick={toggleMute} className="md:hidden text-white hover:bg-white/20 h-8 w-8">
+                      {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="text-white hover:bg-white/20 h-8 w-8 md:h-10 md:w-10">
+                      <Maximize className="w-4 h-4 md:w-5 md:h-5" />
                     </Button>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Video Info */}
-            <h1 className="text-xl font-semibold mt-4 text-foreground">{video.title}</h1>
+            {/* Video Info - with padding on mobile */}
+            <div className="px-3 md:px-0">
+              <h1 className="text-base md:text-xl font-semibold mt-3 md:mt-4 text-foreground">{video.title}</h1>
 
-            <div className="flex flex-wrap items-center justify-between gap-4 mt-4">
-              {/* Channel Info */}
-              <div className="flex items-center gap-4">
-                <Link to={`/channel/${video.channel.id}`}>
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={video.channel.avatar_url || undefined} />
-                    <AvatarFallback>{video.channel.name[0]}</AvatarFallback>
-                  </Avatar>
-                </Link>
-                <div>
+              <div className="flex flex-col md:flex-row md:flex-wrap md:items-center justify-between gap-3 md:gap-4 mt-3 md:mt-4">
+                {/* Channel Info */}
+                <div className="flex items-center gap-3 md:gap-4">
                   <Link to={`/channel/${video.channel.id}`}>
-                    <h3 className="font-medium text-sm text-foreground hover:text-primary">{video.channel.name}</h3>
+                    <Avatar className="h-9 w-9 md:h-10 md:w-10">
+                      <AvatarImage src={video.channel.avatar_url || undefined} />
+                      <AvatarFallback>{video.channel.name[0]}</AvatarFallback>
+                    </Avatar>
                   </Link>
-                  <p className="text-xs text-muted-foreground">
-                    {formatViews(video.channel.subscriber_count).replace(' views', '')} subscribers
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <Link to={`/channel/${video.channel.id}`}>
+                      <h3 className="font-medium text-sm text-foreground hover:text-primary truncate">{video.channel.name}</h3>
+                    </Link>
+                    <p className="text-xs text-muted-foreground">
+                      {formatViews(video.channel.subscriber_count).replace(' views', '')} subscribers
+                    </p>
+                  </div>
+                  {user?.id !== video.channel.user_id && (
+                    <Button 
+                      onClick={handleSubscribe}
+                      size="sm"
+                      className={`rounded-full ${isSubscribed ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80' : 'bg-foreground text-background hover:bg-foreground/90'}`}
+                    >
+                      {isSubscribed ? 'Subscribed' : 'Subscribe'}
+                    </Button>
+                  )}
                 </div>
-                {user?.id !== video.channel.user_id && (
-                  <Button 
-                    onClick={handleSubscribe}
-                    className={`rounded-full ${isSubscribed ? 'bg-secondary text-secondary-foreground hover:bg-secondary/80' : 'bg-foreground text-background hover:bg-foreground/90'}`}
-                  >
-                    {isSubscribed ? 'Subscribed' : 'Subscribe'}
-                  </Button>
-                )}
-              </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2">
-                <div className="flex items-center bg-secondary rounded-full">
+                {/* Action Buttons - scrollable on mobile */}
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-3 px-3 md:mx-0 md:px-0">
+                  <div className="flex items-center bg-secondary rounded-full flex-shrink-0">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className={`rounded-l-full px-3 gap-1.5 ${userLike === true ? 'text-primary' : ''}`}
+                      onClick={() => handleLike(true)}
+                    >
+                      <ThumbsUp className="h-4 w-4" fill={userLike === true ? 'currentColor' : 'none'} />
+                      <span className="text-xs">{formatViews(video.like_count || 0).replace(' views', '')}</span>
+                    </Button>
+                    <div className="w-px h-5 bg-border" />
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      className={`rounded-r-full px-3 ${userLike === false ? 'text-primary' : ''}`}
+                      onClick={() => handleLike(false)}
+                    >
+                      <ThumbsDown className="h-4 w-4" fill={userLike === false ? 'currentColor' : 'none'} />
+                    </Button>
+                  </div>
                   <Button 
-                    variant="ghost" 
-                    className={`rounded-l-full px-4 gap-2 ${userLike === true ? 'text-primary' : ''}`}
-                    onClick={() => handleLike(true)}
+                    variant="secondary" 
+                    size="sm"
+                    className="rounded-full gap-1.5 flex-shrink-0"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast({ title: 'Link copied!' });
+                    }}
                   >
-                    <ThumbsUp className="h-5 w-5" fill={userLike === true ? 'currentColor' : 'none'} />
-                    <span className="text-sm">{formatViews(video.like_count || 0).replace(' views', '')}</span>
-                  </Button>
-                  <div className="w-px h-6 bg-border" />
-                  <Button 
-                    variant="ghost" 
-                    className={`rounded-r-full px-4 ${userLike === false ? 'text-primary' : ''}`}
-                    onClick={() => handleLike(false)}
-                  >
-                    <ThumbsDown className="h-5 w-5" fill={userLike === false ? 'currentColor' : 'none'} />
+                    <Share2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Share</span>
                   </Button>
                 </div>
-                <Button 
-                  variant="secondary" 
-                  className="rounded-full gap-2"
-                  onClick={() => {
-                    navigator.clipboard.writeText(window.location.href);
-                    toast({ title: 'Link copied!' });
-                  }}
-                >
-                  <Share2 className="h-5 w-5" />
-                  Share
-                </Button>
               </div>
-            </div>
 
-            {/* Description */}
-            <div className="mt-4 p-4 bg-secondary rounded-xl">
-              <div className="flex gap-2 text-sm font-medium mb-2 text-foreground">
-                <span>{formatViews(video.view_count || 0)}</span>
-                <span>•</span>
-                <span>{formatTimeAgo(video.created_at)}</span>
+              {/* Description */}
+              <div className="mt-3 md:mt-4 p-3 md:p-4 bg-secondary rounded-xl">
+                <div className="flex gap-2 text-xs md:text-sm font-medium mb-2 text-foreground">
+                  <span>{formatViews(video.view_count || 0)}</span>
+                  <span>•</span>
+                  <span>{formatTimeAgo(video.created_at)}</span>
+                </div>
+                <p className="text-xs md:text-sm text-foreground whitespace-pre-wrap line-clamp-3 md:line-clamp-none">
+                  {video.description || 'No description available.'}
+                </p>
               </div>
-              <p className="text-sm text-foreground whitespace-pre-wrap">
-                {video.description || 'No description available.'}
-              </p>
-            </div>
 
-            {/* Comments Section */}
-            <div className="mt-6">
-              <h3 className="font-medium mb-4 text-foreground">Comments</h3>
-              <CommentSection videoId={id} />
+              {/* Comments Section */}
+              <div className="mt-4 md:mt-6">
+                <h3 className="font-medium mb-3 md:mb-4 text-foreground">Comments</h3>
+                <CommentSection videoId={id} />
+              </div>
             </div>
           </div>
 
           {/* Recommended Videos */}
-          <div className="lg:w-[400px] space-y-3">
+          <div className="lg:w-[400px] px-3 md:px-0 mt-4 lg:mt-0">
             <h3 className="font-semibold text-foreground mb-3">Recommended</h3>
-            {recommendedVideos.length > 0 ? (
-              recommendedVideos.map((rec) => (
-                <Link key={rec.id} to={`/watch/${rec.id}`} className="flex gap-2 group">
-                  <div className="relative w-40 flex-shrink-0 aspect-video rounded-lg overflow-hidden bg-muted">
-                    <img
-                      src={rec.thumbnail_url || '/placeholder.svg'}
-                      alt={rec.title}
-                      className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    />
-                    <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1 rounded">
-                      {formatDuration(rec.duration || 0)}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-medium line-clamp-2 text-foreground group-hover:text-primary">{rec.title}</h4>
-                    <p className="text-xs text-muted-foreground mt-1">{rec.channel.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatViews(rec.view_count || 0)} • {formatTimeAgo(rec.created_at)}
-                    </p>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <p className="text-muted-foreground text-sm">No recommended videos yet</p>
-            )}
+            <div className="space-y-3">
+              {recommendedVideos.length > 0 ? (
+                recommendedVideos.map((rec) => (
+                  <Link key={rec.id} to={`/watch/${rec.id}`} className="flex gap-2 group">
+                    <div className="relative w-40 flex-shrink-0 aspect-video rounded-lg overflow-hidden bg-muted">
+                      <img
+                        src={rec.thumbnail_url || '/placeholder.svg'}
+                        alt={rec.title}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                      />
+                      <span className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1 rounded">
+                        {formatDuration(rec.duration || 0)}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-medium line-clamp-2 text-foreground group-hover:text-primary">{rec.title}</h4>
+                      <p className="text-xs text-muted-foreground mt-1">{rec.channel.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatViews(rec.view_count || 0)} • {formatTimeAgo(rec.created_at)}
+                      </p>
+                    </div>
+                  </Link>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-sm">No recommended videos yet</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

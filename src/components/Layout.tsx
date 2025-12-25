@@ -2,17 +2,20 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import MobileBottomNav from "./MobileBottomNav";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface LayoutProps {
   children: React.ReactNode;
+  hideBottomNav?: boolean;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children, hideBottomNav = false }: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const handleResize = () => {
-      // On mobile screens, close sidebar by default
       if (window.innerWidth < 768) {
         setSidebarOpen(false);
       } else {
@@ -20,7 +23,7 @@ const Layout = ({ children }: LayoutProps) => {
       }
     };
     
-    handleResize(); // Set initial state
+    handleResize();
     window.addEventListener('resize', handleResize);
     
     return () => window.removeEventListener('resize', handleResize);
@@ -29,15 +32,16 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-      <Sidebar isOpen={sidebarOpen} />
+      {!isMobile && <Sidebar isOpen={sidebarOpen} />}
       <main
         className={cn(
           "pt-14 transition-all duration-200",
-          sidebarOpen && window.innerWidth >= 768 ? "ml-60" : "ml-[72px]"
+          isMobile ? "ml-0 pb-16" : (sidebarOpen ? "ml-60" : "ml-[72px]")
         )}
       >
         {children}
       </main>
+      {isMobile && !hideBottomNav && <MobileBottomNav />}
     </div>
   );
 };

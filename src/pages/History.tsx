@@ -99,14 +99,14 @@ export default function History() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto py-4 px-4">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Watch History</h1>
+      <div className="max-w-7xl mx-auto py-4 px-0 md:px-4">
+        <div className="flex items-center justify-between mb-4 md:mb-6 px-3 md:px-0">
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">Watch History</h1>
           
           {history.length > 0 && (
-            <Button variant="outline" onClick={clearHistory} className="gap-2">
+            <Button variant="outline" size="sm" onClick={clearHistory} className="gap-2">
               <Trash2 className="w-4 h-4" />
-              Clear All
+              <span className="hidden sm:inline">Clear All</span>
             </Button>
           )}
         </div>
@@ -116,10 +116,11 @@ export default function History() {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : history.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-0 md:space-y-4">
             {history.map((item) => (
-              <div key={item.id} className="flex gap-4 group">
-                <div className="w-64 flex-shrink-0">
+              <div key={item.id} className="group">
+                {/* Mobile: Full width video card */}
+                <div className="md:hidden pb-4">
                   <VideoCard
                     id={item.video.id}
                     title={item.video.title}
@@ -130,33 +131,50 @@ export default function History() {
                     timestamp={item.watched_at}
                     duration={item.video.duration}
                     channelId={item.video.channel.id}
-                    compact
                   />
                 </div>
-                <div className="flex-1 hidden sm:block">
-                  <h3 className="font-semibold text-foreground line-clamp-2">
-                    {item.video.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {item.video.channel.name}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Watched {new Date(item.watched_at).toLocaleDateString()}
-                  </p>
+                
+                {/* Desktop: Horizontal layout */}
+                <div className="hidden md:flex gap-4">
+                  <div className="w-64 flex-shrink-0">
+                    <VideoCard
+                      id={item.video.id}
+                      title={item.video.title}
+                      thumbnail={item.video.thumbnail_url || '/placeholder.svg'}
+                      channelName={item.video.channel.name}
+                      channelAvatar={item.video.channel.avatar_url || undefined}
+                      views={item.video.view_count}
+                      timestamp={item.watched_at}
+                      duration={item.video.duration}
+                      channelId={item.video.channel.id}
+                      compact
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground line-clamp-2">
+                      {item.video.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {item.video.channel.name}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Watched {new Date(item.watched_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => removeFromHistory(item.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={() => removeFromHistory(item.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 text-center">
+          <div className="flex flex-col items-center justify-center h-64 text-center px-4">
             <HistoryIcon className="w-16 h-16 text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold text-foreground mb-2">No watch history</h2>
             <p className="text-muted-foreground">
