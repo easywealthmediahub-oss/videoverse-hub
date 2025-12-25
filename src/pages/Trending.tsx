@@ -81,10 +81,10 @@ export default function Trending() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto py-6 px-4">
-        <div className="flex items-center gap-3 mb-6">
-          <Flame className="w-8 h-8 text-orange-500" />
-          <h1 className="text-2xl font-bold text-foreground">Trending</h1>
+      <div className="max-w-7xl mx-auto py-4 md:py-6 px-0 md:px-4">
+        <div className="flex items-center gap-3 mb-4 md:mb-6 px-3 md:px-0">
+          <Flame className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">Trending</h1>
         </div>
 
         {loading ? (
@@ -92,24 +92,25 @@ export default function Trending() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 md:gap-4">
             {videos.map((video) => (
-              <VideoCard
-                key={video.id}
-                id={video.id}
-                title={video.title}
-                thumbnail={video.thumbnail_url || '/placeholder.svg'}
-                channelName={video.channel.name}
-                channelId={video.channel.id}
-                channelAvatar={video.channel.avatar_url || undefined}
-                views={video.view_count}
-                timestamp={video.created_at}
-                duration={video.duration}
-              />
+              <div key={video.id} className="pb-4 md:pb-0">
+                <VideoCard
+                  id={video.id}
+                  title={video.title}
+                  thumbnail={video.thumbnail_url || '/placeholder.svg'}
+                  channelName={video.channel.name}
+                  channelId={video.channel.id}
+                  channelAvatar={video.channel.avatar_url || undefined}
+                  views={video.view_count}
+                  timestamp={video.created_at}
+                  duration={video.duration}
+                />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
+          <div className="text-center py-20 px-4">
             <Flame className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold text-foreground mb-2">No trending videos yet</h2>
             <p className="text-muted-foreground">Popular videos from this week will appear here</p>

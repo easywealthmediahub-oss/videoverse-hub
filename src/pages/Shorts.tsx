@@ -209,11 +209,11 @@ export default function Shorts() {
   const currentShort = shorts[currentIndex];
 
   return (
-    <Layout>
-      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-background">
+    <Layout hideBottomNav>
+      <div className="flex items-center justify-center min-h-[calc(100vh-3.5rem)] bg-black md:bg-background">
         <div className="relative flex items-center gap-4">
-          {/* Navigation */}
-          <div className="absolute -left-16 flex flex-col gap-2">
+          {/* Navigation - hidden on mobile, use swipe instead */}
+          <div className="hidden md:flex absolute -left-16 flex-col gap-2">
             <Button
               variant="ghost"
               size="icon"
@@ -234,8 +234,8 @@ export default function Shorts() {
             </Button>
           </div>
 
-          {/* Video Container */}
-          <div className="relative w-[360px] h-[640px] bg-black rounded-xl overflow-hidden">
+          {/* Video Container - full screen on mobile */}
+          <div className="relative w-screen h-[calc(100vh-3.5rem)] md:w-[360px] md:h-[640px] bg-black md:rounded-xl overflow-hidden">
             <video
               ref={videoRef}
               src={currentShort.video_url}
@@ -259,9 +259,9 @@ export default function Shorts() {
             </div>
 
             {/* Bottom Info */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+            <div className="absolute bottom-0 left-0 right-16 md:right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
               <Link to={`/channel/${currentShort.channel.id}`} className="flex items-center gap-2 mb-2">
-                <Avatar className="w-8 h-8">
+                <Avatar className="w-8 h-8 md:w-10 md:h-10 border-2 border-white">
                   <AvatarImage src={currentShort.channel.avatar_url || ''} />
                   <AvatarFallback>{currentShort.channel.name[0]}</AvatarFallback>
                 </Avatar>
@@ -273,18 +273,71 @@ export default function Shorts() {
             {/* Volume Control */}
             <button
               onClick={toggleMute}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center"
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 flex items-center justify-center"
             >
               {isMuted ? (
-                <VolumeX className="w-4 h-4 text-white" />
+                <VolumeX className="w-5 h-5 text-white" />
               ) : (
-                <Volume2 className="w-4 h-4 text-white" />
+                <Volume2 className="w-5 h-5 text-white" />
               )}
             </button>
+
+            {/* Mobile Action Buttons - right side */}
+            <div className="absolute right-2 bottom-20 flex flex-col gap-4 md:hidden">
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`rounded-full bg-transparent ${userLikes[currentShort.id] === true ? 'text-primary' : 'text-white'}`}
+                  onClick={() => handleLike(currentShort.id, true)}
+                >
+                  <ThumbsUp className="w-7 h-7" />
+                </Button>
+                <span className="text-xs text-white">{formatCount(currentShort.like_count)}</span>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={`rounded-full bg-transparent ${userLikes[currentShort.id] === false ? 'text-destructive' : 'text-white'}`}
+                  onClick={() => handleLike(currentShort.id, false)}
+                >
+                  <ThumbsDown className="w-7 h-7" />
+                </Button>
+                <span className="text-xs text-white">{formatCount(currentShort.dislike_count)}</span>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-transparent text-white"
+                  asChild
+                >
+                  <Link to={`/watch/${currentShort.id}`}>
+                    <MessageCircle className="w-7 h-7" />
+                  </Link>
+                </Button>
+                <span className="text-xs text-white">Comments</span>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-transparent text-white"
+                  onClick={() => handleShare(currentShort)}
+                >
+                  <Share2 className="w-7 h-7" />
+                </Button>
+                <span className="text-xs text-white">Share</span>
+              </div>
+            </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-col gap-4">
+          {/* Desktop Action Buttons */}
+          <div className="hidden md:flex flex-col gap-4">
             <div className="flex flex-col items-center">
               <Button
                 variant="ghost"
@@ -337,14 +390,36 @@ export default function Shorts() {
           </div>
         </div>
 
-        {/* Progress Indicator */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1">
+        {/* Progress Indicator - desktop only */}
+        <div className="hidden md:flex absolute bottom-4 left-1/2 -translate-x-1/2 gap-1">
           {shorts.slice(0, 10).map((_, idx) => (
             <div
               key={idx}
               className={`w-2 h-2 rounded-full ${idx === currentIndex ? 'bg-primary' : 'bg-muted'}`}
             />
           ))}
+        </div>
+
+        {/* Mobile navigation arrows */}
+        <div className="md:hidden absolute left-1/2 -translate-x-1/2 flex flex-col gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToPrevious}
+            disabled={currentIndex === 0}
+            className="absolute -top-[280px] left-1/2 -translate-x-1/2 rounded-full bg-black/30 text-white opacity-50"
+          >
+            <ChevronUp className="w-6 h-6" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={goToNext}
+            disabled={currentIndex === shorts.length - 1}
+            className="absolute top-[280px] left-1/2 -translate-x-1/2 rounded-full bg-black/30 text-white opacity-50"
+          >
+            <ChevronDown className="w-6 h-6" />
+          </Button>
         </div>
       </div>
     </Layout>

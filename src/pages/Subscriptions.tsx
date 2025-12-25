@@ -81,8 +81,8 @@ export default function Subscriptions() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto py-4 px-4">
-        <h1 className="text-2xl font-bold text-foreground mb-6">Subscriptions</h1>
+      <div className="max-w-7xl mx-auto py-4 px-0 md:px-4">
+        <h1 className="text-xl md:text-2xl font-bold text-foreground mb-4 md:mb-6 px-3 md:px-0">Subscriptions</h1>
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -90,48 +90,51 @@ export default function Subscriptions() {
           </div>
         ) : channels.length > 0 ? (
           <>
-            {/* Subscribed Channels */}
-            <ScrollArea className="w-full whitespace-nowrap rounded-lg border mb-8">
-              <div className="flex p-4 gap-4">
-                {channels.map((channel) => (
-                  <Link
-                    key={channel.id}
-                    to={`/channel/${channel.id}`}
-                    className="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity"
-                  >
-                    <Avatar className="w-16 h-16">
-                      <AvatarImage src={channel.avatar_url || undefined} />
-                      <AvatarFallback>{channel.name[0]}</AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-foreground font-medium truncate max-w-[80px]">
-                      {channel.name}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
+            {/* Subscribed Channels - horizontal scroll on mobile */}
+            <div className="mb-6 md:mb-8">
+              <ScrollArea className="w-full whitespace-nowrap md:rounded-lg md:border">
+                <div className="flex p-3 md:p-4 gap-3 md:gap-4">
+                  {channels.map((channel) => (
+                    <Link
+                      key={channel.id}
+                      to={`/channel/${channel.id}`}
+                      className="flex flex-col items-center gap-1.5 md:gap-2 hover:opacity-80 transition-opacity"
+                    >
+                      <Avatar className="w-14 h-14 md:w-16 md:h-16">
+                        <AvatarImage src={channel.avatar_url || undefined} />
+                        <AvatarFallback>{channel.name[0]}</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs md:text-sm text-foreground font-medium truncate max-w-[70px] md:max-w-[80px]">
+                        {channel.name}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+              </ScrollArea>
+            </div>
 
             {/* Videos from Subscriptions */}
             {videos.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0 md:gap-4">
                 {videos.map((video) => (
-                  <VideoCard
-                    key={video.id}
-                    id={video.id}
-                    title={video.title}
-                    thumbnail={video.thumbnail_url || '/placeholder.svg'}
-                    channelName={video.channel.name}
-                    channelAvatar={video.channel.avatar_url || undefined}
-                    views={video.view_count}
-                    timestamp={video.created_at}
-                    duration={video.duration}
-                    channelId={video.channel.id}
-                  />
+                  <div key={video.id} className="pb-4 md:pb-0">
+                    <VideoCard
+                      id={video.id}
+                      title={video.title}
+                      thumbnail={video.thumbnail_url || '/placeholder.svg'}
+                      channelName={video.channel.name}
+                      channelAvatar={video.channel.avatar_url || undefined}
+                      views={video.view_count}
+                      timestamp={video.created_at}
+                      duration={video.duration}
+                      channelId={video.channel.id}
+                    />
+                  </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
+              <div className="text-center py-12 px-4">
                 <p className="text-muted-foreground">
                   No new videos from your subscriptions
                 </p>
@@ -139,7 +142,7 @@ export default function Subscriptions() {
             )}
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 text-center">
+          <div className="flex flex-col items-center justify-center h-64 text-center px-4">
             <Users className="w-16 h-16 text-muted-foreground mb-4" />
             <h2 className="text-xl font-semibold text-foreground mb-2">No subscriptions yet</h2>
             <p className="text-muted-foreground">
