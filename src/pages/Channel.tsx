@@ -252,12 +252,6 @@ export default function ChannelPage() {
           <div className="flex-1">
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">{channel.name}</h1>
             <div className="flex items-center gap-2 text-muted-foreground mt-1">
-              {channel.username && (
-                <>
-                  <span className="text-sm">@{channel.username}</span>
-                  <span>•</span>
-                </>
-              )}
               <Users className="w-4 h-4" />
               <span>{formatSubscribers(channel.subscriber_count)} subscribers</span>
               <span>•</span>
