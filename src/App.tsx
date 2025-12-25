@@ -30,6 +30,7 @@ import NotFound from "./pages/NotFound";
 import Studio from "./pages/Studio";
 import StudioDashboard from "./pages/studio/StudioDashboard";
 import StudioContent from "./pages/studio/StudioContent";
+import StudioPlaylists from "./pages/studio/StudioPlaylists";
 import StudioAnalytics from "./pages/studio/StudioAnalytics";
 import StudioComments from "./pages/studio/StudioComments";
 import StudioEarn from "./pages/studio/StudioEarn";
@@ -79,6 +80,7 @@ const App = () => (
                 <Route path="/studio" element={<Studio />}>
                   <Route index element={<StudioDashboard />} />
                   <Route path="content" element={<StudioContent />} />
+                  <Route path="playlists" element={<StudioPlaylists />} />
                   <Route path="analytics" element={<StudioAnalytics />} />
                   <Route path="comments" element={<StudioComments />} />
                   <Route path="earn" element={<StudioEarn />} />

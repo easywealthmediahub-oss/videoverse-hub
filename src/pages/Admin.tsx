@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link, Outlet, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { 
   LayoutDashboard, 
   Users, 
@@ -13,7 +15,7 @@ import {
   X,
   Shield,
   DollarSign,
-  BarChart3
+  Home
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,11 +28,79 @@ const adminNavItems = [
   { icon: Settings, label: 'Settings', path: '/admin/settings' },
 ];
 
+function SidebarContent({ 
+  sidebarOpen, 
+  setSidebarOpen,
+  onNavigate 
+}: { 
+  sidebarOpen: boolean; 
+  setSidebarOpen: (open: boolean) => void;
+  onNavigate?: () => void;
+}) {
+  const location = useLocation();
+
+  return (
+    <>
+      <div className="flex items-center justify-between p-4 border-b border-border">
+        {sidebarOpen && (
+          <Link to="/admin" className="flex items-center gap-2" onClick={onNavigate}>
+            <Shield className="h-6 w-6 text-primary" />
+            <span className="font-bold text-lg text-foreground">Admin</span>
+          </Link>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="hidden md:flex"
+        >
+          {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </Button>
+      </div>
+
+      <nav className="p-2 space-y-1 flex-1">
+        {adminNavItems.map((item) => {
+          const isActive = location.pathname === item.path || 
+            (item.path !== '/admin' && location.pathname.startsWith(item.path));
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={onNavigate}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors",
+                isActive 
+                  ? "bg-primary text-primary-foreground" 
+                  : "text-muted-foreground hover:bg-accent hover:text-foreground"
+              )}
+            >
+              <item.icon className="h-5 w-5 flex-shrink-0" />
+              {sidebarOpen && <span className="font-medium">{item.label}</span>}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {sidebarOpen && (
+        <div className="p-4 border-t border-border">
+          <Button variant="outline" asChild className="w-full gap-2">
+            <Link to="/" onClick={onNavigate}>
+              <Home className="h-4 w-4" />
+              Back to Site
+            </Link>
+          </Button>
+        </div>
+      )}
+    </>
+  );
+}
+
 export default function Admin() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
+  const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileSheetOpen, setMobileSheetOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [checkingAdmin, setCheckingAdmin] = useState(true);
 
@@ -72,7 +142,7 @@ export default function Admin() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center">
           <Shield className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
           <h1 className="text-2xl font-bold text-foreground mb-2">Access Denied</h1>
@@ -85,65 +155,57 @@ export default function Admin() {
     );
   }
 
+  // Mobile Layout
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        {/* Mobile Header */}
+        <header className="sticky top-0 z-50 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+          <Sheet open={mobileSheetOpen} onOpenChange={setMobileSheetOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-72 p-0 flex flex-col">
+              <SidebarContent 
+                sidebarOpen={true} 
+                setSidebarOpen={setSidebarOpen} 
+                onNavigate={() => setMobileSheetOpen(false)}
+              />
+            </SheetContent>
+          </Sheet>
+
+          <div className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-primary" />
+            <span className="font-bold text-foreground">Admin Panel</span>
+          </div>
+
+          <div className="w-10" /> {/* Spacer for alignment */}
+        </header>
+
+        {/* Mobile Content */}
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
+  // Desktop Layout
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
       <aside className={cn(
-        "fixed left-0 top-0 h-full bg-card border-r border-border z-50 transition-all duration-300",
+        "fixed left-0 top-0 h-full bg-card border-r border-border z-50 transition-all duration-300 flex flex-col",
         sidebarOpen ? "w-64" : "w-16"
       )}>
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          {sidebarOpen && (
-            <Link to="/admin" className="flex items-center gap-2">
-              <Shield className="h-6 w-6 text-primary" />
-              <span className="font-bold text-lg text-foreground">Admin</span>
-            </Link>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </div>
-
-        <nav className="p-2 space-y-1">
-          {adminNavItems.map((item) => {
-            const isActive = location.pathname === item.path || 
-              (item.path !== '/admin' && location.pathname.startsWith(item.path));
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-lg transition-colors",
-                  isActive 
-                    ? "bg-primary text-primary-foreground" 
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
-                )}
-              >
-                <item.icon className="h-5 w-5 flex-shrink-0" />
-                {sidebarOpen && <span>{item.label}</span>}
-              </Link>
-            );
-          })}
-        </nav>
-
-        {sidebarOpen && (
-          <div className="absolute bottom-4 left-4 right-4">
-            <Button variant="outline" asChild className="w-full gap-2">
-              <Link to="/">
-                Back to Site
-              </Link>
-            </Button>
-          </div>
-        )}
+        <SidebarContent sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       </aside>
 
       {/* Main Content */}
       <main className={cn(
-        "flex-1 transition-all duration-300",
+        "flex-1 transition-all duration-300 min-h-screen",
         sidebarOpen ? "ml-64" : "ml-16"
       )}>
         <Outlet />
