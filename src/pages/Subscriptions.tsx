@@ -11,6 +11,7 @@ import { Users } from 'lucide-react';
 interface Channel {
   id: string;
   name: string;
+  username: string;
   avatar_url: string | null;
 }
 

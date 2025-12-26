@@ -19,6 +19,7 @@ interface Channel {
   id: string;
   user_id: string;
   name: string;
+  username: string;
   description: string | null;
   banner_url: string | null;
   avatar_url: string | null;
@@ -51,12 +52,17 @@ export default function ChannelPage() {
   useEffect(() => {
     if (id) {
       fetchChannel();
-      fetchVideos();
       if (user) {
         checkSubscription();
       }
     }
   }, [id, user]);
+
+  useEffect(() => {
+    if (channel) {
+      fetchVideos();
+    }
+  }, [channel]);
 
   const fetchChannel = async () => {
     // Check if the id parameter looks like a UUID
@@ -107,15 +113,24 @@ export default function ChannelPage() {
     if (!channel) return;
     
     try {
-      const { data, error } = await supabase
+      // Check if current user is the channel owner
+      const isOwner = user && user.id === channel.user_id;
+      
+      let query = supabase
         .from('videos')
         .select(`
           *,
           channel:channels(*)
         `)
         .eq('channel_id', channel.id)
-        .eq('visibility', 'public')
         .order('created_at', { ascending: false });
+      
+      // If not owner, only show public videos
+      if (!isOwner) {
+        query = query.eq('visibility', 'public');
+      }
+      
+      const { data, error } = await query;
 
       if (error) {
         console.error('Error fetching videos:', error);
@@ -125,6 +140,7 @@ export default function ChannelPage() {
       if (data) {
         const allVideos = data as any[];
         // Separate videos and shorts based on duration
+        // Shorts are videos with duration <= 60 seconds
         const regularVideos = allVideos.filter(v => !v.duration || v.duration > 60);
         const shortVideos = allVideos.filter(v => v.duration && v.duration <= 60);
         setVideos(regularVideos);

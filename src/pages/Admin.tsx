@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import MobileBottomNav from '@/components/MobileBottomNav';
 import { 
   LayoutDashboard, 
   Users, 
@@ -185,9 +186,14 @@ export default function Admin() {
         </header>
 
         {/* Mobile Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pb-16">
           <Outlet />
         </main>
+        
+        {/* Mobile Bottom Navigation */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0">
+          <MobileBottomNav />
+        </div>
       </div>
     );
   }

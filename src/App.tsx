@@ -28,6 +28,7 @@ import Shorts from "./pages/Shorts";
 import ChannelSettings from "./pages/ChannelSettings";
 import NotFound from "./pages/NotFound";
 import Studio from "./pages/Studio";
+import Playlist from "./pages/Playlist";
 import StudioDashboard from "./pages/studio/StudioDashboard";
 import StudioContent from "./pages/studio/StudioContent";
 import StudioPlaylists from "./pages/studio/StudioPlaylists";
@@ -42,6 +43,8 @@ import AdminContent from "./pages/admin/AdminContent";
 import AdminComments from "./pages/admin/AdminComments";
 import AdminMonetization from "./pages/admin/AdminMonetization";
 import AdminSettings from "./pages/admin/AdminSettings";
+import Profile from "./pages/Profile";
+import Shop from "./pages/Shop";
 
 const queryClient = new QueryClient();
 
@@ -59,6 +62,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/watch/:id" element={<Watch />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/channel/:id" element={<Channel />} />
                 <Route path="/c/:id" element={<Channel />} />
                 <Route path="/channel/settings" element={<ChannelSettings />} />
@@ -67,6 +71,7 @@ const App = () => (
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/subscriptions" element={<Subscriptions />} />
                 <Route path="/playlists" element={<Playlists />} />
+                <Route path="/playlist/:id" element={<Playlist />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/explore" element={<Explore />} />
                 <Route path="/trending" element={<Trending />} />
@@ -76,6 +81,7 @@ const App = () => (
                 <Route path="/sports" element={<Sports />} />
                 <Route path="/liked" element={<LikedVideos />} />
                 <Route path="/shorts" element={<Shorts />} />
+                <Route path="/shop" element={<Shop />} />
                 {/* Studio Routes */}
                 <Route path="/studio" element={<Studio />}>
                   <Route index element={<StudioDashboard />} />

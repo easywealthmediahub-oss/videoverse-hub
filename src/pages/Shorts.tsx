@@ -6,6 +6,7 @@ import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
+import MobileBottomNav from '@/components/MobileBottomNav';
 import { 
   Play, 
   Pause, 
@@ -22,6 +23,7 @@ import {
 interface Channel {
   id: string;
   name: string;
+  username: string;
   avatar_url: string | null;
 }
 
@@ -209,7 +211,8 @@ export default function Shorts() {
   const currentShort = shorts[currentIndex];
 
   return (
-    <Layout hideBottomNav>
+    <div className="flex flex-col min-h-screen bg-black md:bg-background">
+      {/* Hide header on mobile for shorts */}
       <div className="flex items-center justify-center min-h-[calc(100vh-3.5rem)] bg-black md:bg-background">
         <div className="relative flex items-center gap-4">
           {/* Navigation - hidden on mobile, use swipe instead */}
@@ -422,6 +425,10 @@ export default function Shorts() {
           </Button>
         </div>
       </div>
-    </Layout>
+      {/* Mobile navigation still appears on shorts page */}
+      <div className="md:hidden">
+        <MobileBottomNav />
+      </div>
+    </div>
   );
 }

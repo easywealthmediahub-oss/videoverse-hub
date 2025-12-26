@@ -39,7 +39,7 @@ export default function ChannelSettings() {
   useEffect(() => {
     if (channel) {
       setName(channel.name || '');
-      setUsername(channel.name || ''); // Use channel name as username
+      setUsername(channel.username || '');
       setDescription(channel.description || '');
       // Parse links from channel data
       const channelLinks = (channel as any).links;
@@ -182,69 +182,22 @@ export default function ChannelSettings() {
     const validLinks = links.filter(link => link.title.trim() && link.url.trim());
     
     try {
-      // Update channel with all fields, but handle username separately if it doesn't exist in DB
-      let channelUpdateResult;
+      // Update channel with all fields
+      const channelUpdates: any = { 
+        name, 
+        username, // Update username in channel table
+        description,
+        links: validLinks as unknown as any
+      };
       
-      // First, try to update with username if provided
-      if (username) {
-        const channelUpdates: any = { 
-          name, 
-          description,
-          links: validLinks as unknown as any,
-          username
-        };
+      const channelUpdateResult = await supabase
+        .from('channels')
+        .update(channelUpdates)
+        .eq('id', channel.id);
         
-        channelUpdateResult = await supabase
-          .from('channels')
-          .update(channelUpdates)
-          .eq('id', channel.id);
-          
-        // If there's an error about the username column not existing, try updating without username
-        if (channelUpdateResult.error && channelUpdateResult.error.message && 
-            (channelUpdateResult.error.message.includes('username') || channelUpdateResult.error.message.includes('column'))) {
-          // Update without username column
-          channelUpdateResult = await supabase
-            .from('channels')
-            .update({ 
-              name, 
-              description,
-              links: validLinks as unknown as any
-            })
-            .eq('id', channel.id);
-            
-          if (channelUpdateResult.error) {
-            throw channelUpdateResult.error;
-          }
-        } else if (channelUpdateResult.error) {
-          throw channelUpdateResult.error;
-        }
-      } else {
-        // If no username provided, just update other fields
-        channelUpdateResult = await supabase
-          .from('channels')
-          .update({ 
-            name, 
-            description,
-            links: validLinks as unknown as any
-          })
-          .eq('id', channel.id);
-          
-        if (channelUpdateResult.error) {
-          throw channelUpdateResult.error;
-        }
+      if (channelUpdateResult.error) {
+        throw channelUpdateResult.error;
       }
-      
-      // Update profile
-      const { error: profileError } = await updateProfile({ 
-        username: name 
-      });
-      
-      if (profileError) {
-        console.error('Profile update error:', profileError);
-        // Continue anyway, since channel was updated
-      }
-      
-      // The state will be updated via refetch below, no need to update directly here
       
       // Show success toast
       toast({ title: 'Changes saved!' });

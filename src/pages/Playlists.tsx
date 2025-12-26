@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, ListVideo, Lock, Globe, Link as LinkIcon, Trash2 } from 'lucide-react';
+import { Plus, ListVideo, Lock, Globe, Link as LinkIcon, Trash2, Camera, Loader2 } from 'lucide-react';
 
 interface Playlist {
   id: string;
@@ -35,6 +35,9 @@ export default function Playlists() {
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newVisibility, setNewVisibility] = useState('private');
+  const [newThumbnail, setNewThumbnail] = useState<string | null>(null);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!user) {
@@ -76,6 +79,7 @@ export default function Playlists() {
         title: newTitle.trim(),
         description: newDescription.trim() || null,
         visibility: newVisibility,
+        thumbnail_url: newThumbnail || null,
       })
       .select()
       .single();
@@ -92,6 +96,10 @@ export default function Playlists() {
       setNewTitle('');
       setNewDescription('');
       setNewVisibility('private');
+      setNewThumbnail(null);
+      if (thumbnailInputRef.current) {
+        thumbnailInputRef.current.value = '';
+      }
       toast({ title: 'Playlist created!' });
     }
   };
@@ -105,6 +113,56 @@ export default function Playlists() {
     if (!error) {
       setPlaylists(playlists.filter(p => p.id !== playlistId));
       toast({ title: 'Playlist deleted' });
+    }
+  };
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({ variant: 'destructive', title: 'Please select an image file' });
+      return;
+    }
+
+    setUploadingThumbnail(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+      const filePath = `playlists/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('playlists')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        console.error('Thumbnail upload error:', uploadError);
+        toast({
+          title: 'Upload Error',
+          description: `Failed to upload thumbnail: ${uploadError.message}. This may be due to storage permissions. Please contact an administrator.`,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('playlists')
+        .getPublicUrl(filePath);
+
+      setNewThumbnail(publicUrl);
+      toast({ title: 'Thumbnail uploaded!' });
+    } catch (error) {
+      console.error('Thumbnail upload error:', error);
+      toast({ variant: 'destructive', title: 'Failed to upload thumbnail' });
+    } finally {
+      setUploadingThumbnail(false);
+    }
+  };
+
+  const removeThumbnail = () => {
+    setNewThumbnail(null);
+    if (thumbnailInputRef.current) {
+      thumbnailInputRef.current.value = '';
     }
   };
 
@@ -187,6 +245,60 @@ export default function Playlists() {
                       </SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Playlist Thumbnail (optional)</Label>
+                  <div 
+                    className="relative w-full h-32 bg-muted rounded-lg overflow-hidden cursor-pointer group border-2 border-dashed border-muted-foreground/20 flex items-center justify-center"
+                    onClick={() => !uploadingThumbnail && thumbnailInputRef.current?.click()}
+                  >
+                    {newThumbnail ? (
+                      <div className="relative w-full h-full">
+                        <img 
+                          src={newThumbnail} 
+                          alt="Playlist thumbnail" 
+                          className="w-full h-full object-cover" 
+                        />
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <Camera className="w-6 h-6 text-white" />
+                          <span className="text-white text-sm">Change</span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          className="absolute top-2 right-2 p-1 h-auto w-auto bg-red-500 hover:bg-red-600 text-white rounded-full"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeThumbnail();
+                          }}
+                        >
+                          ×
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <Camera className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-sm text-muted-foreground">
+                          {uploadingThumbnail ? 'Uploading...' : 'Click to upload thumbnail'}
+                        </p>
+                        {uploadingThumbnail && (
+                          <Loader2 className="w-5 h-5 text-muted-foreground animate-spin mx-auto mt-1" />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <input
+                    ref={thumbnailInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleThumbnailUpload}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Recommended size: 16:9 ratio (e.g., 1280x720px)
+                  </p>
                 </div>
               </div>
               

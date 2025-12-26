@@ -155,7 +155,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
           </Button>
         )}
 
-        {!isMobile && <ThemeToggle />}
+
         
         {user ? (
           <>
@@ -169,6 +169,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                 <Button variant="ghost" size="icon">
                   <Bell className="h-5 w-5" />
                 </Button>
+                <ThemeToggle />
               </>
             )}
             {isMobile && (
@@ -213,11 +214,7 @@ const Navbar = ({ onMenuClick }: NavbarProps) => {
                     <LayoutDashboard className="h-4 w-4" /> Studio
                   </Link>
                 </DropdownMenuItem>
-                {isMobile && (
-                  <DropdownMenuItem className="flex items-center gap-2">
-                    <ThemeToggle />
-                  </DropdownMenuItem>
-                )}
+
                 {isAdmin && (
                   <>
                     <DropdownMenuSeparator />

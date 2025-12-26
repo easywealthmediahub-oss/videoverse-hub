@@ -1,16 +1,20 @@
-import { Link, useLocation } from "react-router-dom";
-import { Home, Zap, PlusCircle, PlaySquare, Library } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Link, useLocation } from 'react-router-dom';
+import { Home, Film, PlusSquare, ShoppingBag } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
+import { useProfile } from '@/hooks/useProfile';
 
 const MobileBottomNav = () => {
   const location = useLocation();
+  const { user } = useAuth();
+  const { channel: profileChannel } = useProfile();
 
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
-    { icon: Zap, label: "Shorts", path: "/shorts" },
-    { icon: PlusCircle, label: "", path: "/upload", isCreate: true },
-    { icon: PlaySquare, label: "Subscriptions", path: "/subscriptions" },
-    { icon: Library, label: "Library", path: "/history" },
+    { icon: Film, label: "Shorts", path: "/shorts" },
+    { icon: PlusSquare, label: "", path: "/upload", isCreate: true },
+    { icon: ShoppingBag, label: "Shop", path: "/shop" },
+    { label: "You", path: user ? '/profile' : '/auth', isAvatar: true },
   ];
 
   return (
@@ -34,6 +38,28 @@ const MobileBottomNav = () => {
             );
           }
 
+          if (item.isAvatar) {
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-0.5 min-w-[64px] py-1",
+                  location.pathname === item.path ? "text-foreground" : "text-muted-foreground"
+                )}
+              >
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  <img 
+                    src={profileChannel?.avatar_url || `https://ui-avatars.com/api/?name=${profileChannel?.name || user?.email?.split('@')[0]}&background=0D8ABC&color=fff`} 
+                    alt="User Avatar" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-[10px] font-medium">{item.label}</span>
+              </Link>
+            );
+          }
+          
           return (
             <Link
               key={item.path}

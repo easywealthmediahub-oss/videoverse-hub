@@ -17,6 +17,7 @@ export interface Channel {
   id: string;
   user_id: string;
   name: string;
+  username: string;
   description: string | null;
   banner_url: string | null;
   avatar_url: string | null;
